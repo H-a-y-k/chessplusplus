@@ -94,8 +94,7 @@ public:
     void move_piece(Square from, Square to);
 
     [[nodiscard]]
-    Bitboard pseudo_legal_moves_on_square(Square square,
-                                          std::function<bool(Square)> = [](Square) { return true; });
+    Bitboard pseudo_legal_moves_on_square(Square square);
     [[nodiscard]]
     bool move_is_pseudo_legal(Square from, Square to);
     [[nodiscard]]

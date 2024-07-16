@@ -5,6 +5,7 @@
 #include "chessplusplus/chessplusplus.h"
 #include "internal/fen_utils.h"
 #include "internal/other_utils.h"
+#include <cassert>
 
 using namespace chess;
 using namespace chess::def;
@@ -12,7 +13,6 @@ using namespace chess::def;
 /******************************************************************************
  * chess::Piece
  ******************************************************************************/
-
 Piece::Piece(PieceType _piece_type, Color _color)
     : piece_type(_piece_type)
     , color(_color)
@@ -37,7 +37,6 @@ bool Piece::operator!=(const Piece &other) const
 /******************************************************************************
  * chess::Move
  ******************************************************************************/
-
 Move::Move(Square from, Square to)
     : from(from)
     , to(to)
@@ -57,6 +56,9 @@ Board::Board(const std::string &fen)
         set_fen(fen);
 }
 
+/**
+ * @brief resets board's state to starting position
+ */
 void Board::reset_board()
 {
     using namespace def;
@@ -77,6 +79,9 @@ void Board::reset_board()
     bb_board[black][def::king] = bb_squares[E8];
 }
 
+/**
+ * @brief clears the board
+ */
 void Board::clear()
 {
     bb_board[def::white] = {0,0,0,0,0,0,0};
@@ -87,6 +92,12 @@ void Board::clear()
 // fen related
 // *************
 
+/**
+ * @brief sets new board_fen to the board and updated the bitboard. The board fen must be valid otherwise exception is thrown
+ *
+ * @param `const std::string &_board_fen` the board fen to be set
+ * @throws invalid_argument if the board fen is identified to be invalid
+ */
 void Board::set_board_fen(const std::string &_board_fen)
 {
     const auto crows = utility::validate_and_split_board_fen(_board_fen);
@@ -94,6 +105,13 @@ void Board::set_board_fen(const std::string &_board_fen)
     bb_board = utility::parse_board_fen_from_rows(crows, _board_fen);
 }
 
+/**
+ * @brief sets new fen to the board and updated the bitboard and board's properties. the fen must be valid otherwise exception is thrown
+ *
+ * @todo this function is incomplete
+ * @param `const std::string &fen` the fen to be set
+ * @throws invalid_argument if the fen is identified to be invalid
+ */
 void Board::set_fen(const std::string &fen)
 {
     std::istringstream split(fen);
@@ -134,6 +152,9 @@ void Board::set_fen(const std::string &fen)
     else throw std::invalid_argument("the castling rights part of the fen is invalid: " + fen);
 }
 
+/**
+ * @brief returns the board fen which is computed from the current state of the bitboard
+ */
 std::string Board::board_fen()
 {
     std::string board_fen;
@@ -184,7 +205,9 @@ std::string Board::fen()
 // ************************************
 // string representation of the board
 // ************************************
-
+/**
+ * @brief returns the string representation of the board
+ */
 std::string Board::board_str()
 {
     std::string board;
@@ -209,6 +232,9 @@ std::string Board::board_str()
     return board;
 }
 
+/**
+ * @brief returns the string representation of the bitboard
+ */
 std::string Board::bitboard_str()
 {
     Bitboard bb = 0;
@@ -228,6 +254,9 @@ std::string Board::bitboard_str()
 // square related information
 // ****************************
 
+/**
+ * @brief returns the piece type at the given square or def::piece_types::no_piece if the square is empty
+ */
 PieceType Board::piece_type_at(Square square)
 {
     auto pred = [square](const auto piece_bb) {
@@ -248,6 +277,9 @@ PieceType Board::piece_type_at(Square square)
     return def::no_piece;
 }
 
+/**
+ * @brief returns the piece at the given square or Piece::empty_square() if the square is empty
+ */
 Piece Board::piece_at(Square square)
 {
     PieceType piece_type = piece_type_at(square);
@@ -260,16 +292,28 @@ Piece Board::piece_at(Square square)
     return Piece::empty_square();
 }
 
+/**
+ * @brief returns the color of the piece on the given square with the precondition that the square is not empty
+ * @note if the square is empty, this function returns the valid color def::black.
+ */
 Color Board::color_at(Square square)
 {
-    return bb_board[def::white][piece_type_at(square)] & precomputed::bb_squares[square];
+    auto pt = piece_type_at(square);
+    assert(pt != def::no_piece);
+    return bb_board[def::white][pt] & precomputed::bb_squares[square];
 }
 
+/**
+ * @brief returns `true` of the given square is empty, `false` otherwise
+ */
 bool Board::square_is_empty(Square square)
 {
     return (piece_type_at(square) == def::no_piece);
 }
 
+/**
+ * @brief returns the position of the king for the given side
+ */
 Square Board::king(Color side)
 {
     Bitboard bb_king = bb_board[side][def::king];
@@ -283,7 +327,12 @@ Square Board::king(Color side)
 // *************
 // castling
 // *************
-
+/**
+ * @brief checks if queenside castling is possible in the current state of the board for the given side
+ *
+ * @param `Color side` the side for which the function performs the check
+ * @return `true` if possible, `false` otherwise
+ */
 bool Board::can_castle_kingside(Color side)
 {
     if (castling_rights.find(side ? "K" : "k") != std::string::npos)
@@ -301,6 +350,12 @@ bool Board::can_castle_kingside(Color side)
     return false;
 }
 
+/**
+ * @brief checks if kingside castling is possible in the current state of the board for the given side
+ *
+ * @param `Color side` the side for which the function performs the check
+ * @return `true` if possible, `false` otherwise
+ */
 bool Board::can_castle_queenside(Color side)
 {
     if (castling_rights.find(side ? "Q" : "q") != std::string::npos)
@@ -322,6 +377,13 @@ bool Board::can_castle_queenside(Color side)
     return false;
 }
 
+/**
+ * @brief moves piece without move validation
+ *
+ * @param `Square from` position of the piece that is to be moved
+ * @param `Square to` destination square
+ * @throw invalid_argument if there is no piece at the square `from`
+ */
 void Board::move_piece(Square from, Square to)
 {
     Piece piece_from = piece_at(from);
@@ -338,16 +400,25 @@ void Board::move_piece(Square from, Square to)
     bb_board[piece_from.color][piece_from.piece_type] |= precomputed::bb_squares[to];
 }
 
-Bitboard Board::pseudo_legal_moves_on_square(Square square, std::function<bool(Square)> callback)
+/**
+ * @brief generates pseudo-legal moves on given square
+ *
+ * @returns a bitboard that contains the information about all the pseudolegal moves
+ */
+Bitboard Board::pseudo_legal_moves_on_square(Square square)
 {
     Piece piece = piece_at(square);
     return precomputed::bb_pseudolegal_moves[piece.color][piece.piece_type][square];
 }
 
+/**
+ * @brief determines if a given move is pseudolegal. null moves are not pseudolegal
+ */
 bool Board::move_is_pseudo_legal(Square from, Square to)
 {
     return precomputed::bb_squares[to] & pseudo_legal_moves_on_square(from);
 }
+
 
 bool Board::is_attacking_square(Square from, Square to)
 {
@@ -377,6 +448,8 @@ bool Board::is_capture(Square from, Square to)
 
 std::pair<bool, def::error_code> Board::move_is_legal(Square from, Square to)
 {
+    // TODO
+
     std::pair<bool, def::error_code> _true = {true, def::ok};
 
     auto code = [](def::error_code _code) { return std::pair<bool, def::error_code>(false, _code); };

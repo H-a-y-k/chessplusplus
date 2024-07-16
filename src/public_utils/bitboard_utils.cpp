@@ -25,6 +25,8 @@ Bitboard chess::gen_shift(Bitboard bb, int s)
 
 Bitboard chess::bb_flip_vertical(Bitboard bb)
 {
+    // https://www.chessprogramming.org/flipping_mirroring_and_rotating#vertical
+
     static constexpr Bitboard mask1 = 0x00FF'00FF'00FF'00FF;
     static constexpr Bitboard mask2 = 0x0000'FFFF'0000'FFFF;
 
@@ -37,6 +39,7 @@ Bitboard chess::bb_flip_vertical(Bitboard bb)
 
 Bitboard chess::bb_flip_horizontal(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Horizontal
     static constexpr Bitboard mask1 = 0x5555'5555'5555'5555;
     static constexpr Bitboard mask2 = 0x3333'3333'3333'3333;
     static constexpr Bitboard mask4 = 0x0f0f'0f0f'0f0f'0f0f;
@@ -50,6 +53,8 @@ Bitboard chess::bb_flip_horizontal(Bitboard bb)
 
 Bitboard chess::bb_flip_diagonal(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Diagonal
+
     Bitboard temp_bb;
     static constexpr Bitboard mask1 = 0x5500'5500'5500'5500;
     static constexpr Bitboard mask2 = 0x3333'0000'3333'0000;
@@ -67,6 +72,8 @@ Bitboard chess::bb_flip_diagonal(Bitboard bb)
 
 Bitboard chess::bb_flip_antidiagonal(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
+
     Bitboard temp_bb;
 
     static constexpr Bitboard mask1 = 0xaa00'aa00'aa00'aa00;
@@ -85,6 +92,8 @@ Bitboard chess::bb_flip_antidiagonal(Bitboard bb)
 
 Bitboard chess::bb_rotate_180(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#By_180_degrees_-_Bit-Reversal
+
     static constexpr Bitboard mask_h1 = 0x5555555555555555;
     static constexpr Bitboard mask_h2 = 0x3333333333333333;
     static constexpr Bitboard mask_h4 = 0x0F0F0F0F0F0F0F0F;
@@ -103,7 +112,8 @@ Bitboard chess::bb_rotate_180(Bitboard bb)
 
 Bitboard chess::bb_rotate_90_clockwise(Bitboard bb)
 {
-    // return bb_flip_vertical(bb_flip_diagonal(bb));
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#By_90_degrees_Clockwise
+    // equivalent to bb_flip_vertical(bb_flip_diagonal(bb));
 
     static constexpr Bitboard mask_v1 = 0x00FF'00FF'00FF'00FF;
     static constexpr Bitboard mask_v2 = 0x0000'FFFF'0000'FFFF;
@@ -124,7 +134,8 @@ Bitboard chess::bb_rotate_90_clockwise(Bitboard bb)
 
 Bitboard chess::bb_rotate_90_anti_clockwise(Bitboard bb)
 {
-    // return bb_flip_diagonal(bb_flip_vertical(bb));
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#By_90_degrees_Anti-Clockwise
+    // equivalent to bb_flip_diagonal(bb_flip_vertical(bb));
 
     Bitboard temp_bb;
 
@@ -150,6 +161,8 @@ Bitboard chess::bb_rotate_90_anti_clockwise(Bitboard bb)
 
 Bitboard chess::bb_pseudo_rotate_45_clockwise(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Clockwise
+
     static constexpr Bitboard mask1 = 0xAAAA'AAAA'AAAA'AAAA;
     static constexpr Bitboard mask2 = 0xCCCC'CCCC'CCCC'CCCC;
     static constexpr Bitboard mask4 = 0xF0F0'F0F0'F0F0'F0F0;
@@ -163,6 +176,8 @@ Bitboard chess::bb_pseudo_rotate_45_clockwise(Bitboard bb)
 
 Bitboard chess::bb_pseudo_rotate_45_anti_clockwise(Bitboard bb)
 {
+    // https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Clockwise
+
     static constexpr Bitboard mask1 = 0x5555'5555'5555'5555;
     static constexpr Bitboard mask2 = 0x3333'3333'3333'3333;
     static constexpr Bitboard mask4 = 0x0F0F'0F0F'0F0F'0F0F;
